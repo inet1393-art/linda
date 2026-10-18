@@ -1,0 +1,1 @@
+This project uses Flutter and GitHub Actions to build a release APK. GitHub builds the APK in the cloud; no Android Studio is required on the user's computer.
