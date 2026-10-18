@@ -1,4 +1,3 @@
-```dart
 class LindaCafeApp extends StatelessWidget {
   const LindaCafeApp({super.key});
 
@@ -29,4 +28,4 @@ class LindaCafeApp extends StatelessWidget {
     );
   }
 }
-```
+
