@@ -46,7 +46,7 @@ class LindaCafeApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
     title: 'مدیریت کافه لیندا', debugShowCheckedModeBanner: false,
     theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff59665d), brightness: Brightness.light), useMaterial3: true, scaffoldBackgroundColor: const Color(0xfff7f7f3), appBarTheme: const AppBarTheme(backgroundColor: Color(0xfff7f7f3), centerTitle: false)),
-    builder: (context, child) => Directionality(textDirection: TextDirection.rtl, child: child!),
+    builder: (context, child) => Directionality(textDirection: TextDirection.values.last, child: child!),
     home: const HomePage(),
   );
 }
@@ -95,7 +95,36 @@ class _ProductsPageState extends State<ProductsPage> {
 class SalesPage extends StatefulWidget {final VoidCallback onChanged;const SalesPage({super.key,required this.onChanged});@override State<SalesPage> createState()=>_SalesPageState();}
 class _SalesPageState extends State<SalesPage>{
  Future<void> sell(Map<String,Object?> product) async {final q=TextEditingController(text:'1'); final ok=await showDialog<bool>(context:context,builder:(c)=>AlertDialog(title:Text('ثبت فروش: ${product['name']}'),content:Column(mainAxisSize:MainAxisSize.min,children:[Text('قیمت واحد: ${money(product['price'] as num)} تومان'),const SizedBox(height:12),field(q,'تعداد',num:true)]),actions:[TextButton(onPressed:()=>Navigator.pop(c,false),child:const Text('لغو')),FilledButton(onPressed:()=>Navigator.pop(c,true),child:const Text('ثبت فروش'))]));if(ok==true){final qty=double.tryParse(q.text)??0;if(qty<=0){return;} if(qty>(product['stock'] as num)){if(mounted)ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('موجودی کافی نیست')));return;} await CafeDb.instance.sell(product,qty);widget.onChanged();setState((){});}}
- @override Widget build(BuildContext context)=>FutureBuilder<List<Map<String,Object?>>>(future:CafeDb.instance.rows('products'),builder:(c,s){final rows=s.data??[];return pagePad(Column(children:[sectionTitle('ثبت سفارش و فروش'),const Align(alignment:Alignment.centerRight,child:Text('برای ثبت فروش، روی محصول بزنید. موجودی خودکار کسر می‌شود.',style:TextStyle(color:Colors.black54))),const SizedBox(height:12),Expanded(child:rows.isEmpty?emptyState('برای شروع فروش، ابتدا از بخش انبار محصول ثبت کنید.'):ListView(children:rows.map((r)=>Card(child:ListTile(leading:const CircleAvatar(child:Icon(Icons.coffee)),title:Text('${r['name']}'),subtitle:Text('موجودی: ${r['stock']}'),trailing:FilledButton(onPressed:(r['stock'] as num)>0?()=>sell(r):null,child:Text('${money(r['price'] as num)} تومان')))).toList()))]));});
+ @override
+ Widget build(BuildContext context) => FutureBuilder<List<Map<String, Object?>>>(
+   future: CafeDb.instance.rows('products'),
+   builder: (context, snapshot) {
+     final rows = snapshot.data ?? <Map<String, Object?>>[];
+     return pagePad(Column(children: [
+       sectionTitle('ثبت سفارش و فروش'),
+       const Align(
+         alignment: Alignment.centerRight,
+         child: Text('برای ثبت فروش، روی محصول بزنید. موجودی خودکار کسر می‌شود.', style: TextStyle(color: Colors.black54)),
+       ),
+       const SizedBox(height: 12),
+       Expanded(
+         child: rows.isEmpty
+           ? emptyState('برای شروع فروش، ابتدا از بخش انبار محصول ثبت کنید.')
+           : ListView(children: rows.map<Widget>((r) => Card(
+               child: ListTile(
+                 leading: const CircleAvatar(child: Icon(Icons.coffee)),
+                 title: Text('${r['name']}'),
+                 subtitle: Text('موجودی: ${r['stock']}'),
+                 trailing: FilledButton(
+                   onPressed: (r['stock'] as num) > 0 ? () => sell(r) : null,
+                   child: Text('${money(r['price'] as num)} تومان'),
+                 ),
+               ),
+             )).toList()),
+       ),
+     ]));
+   },
+ );
 }
 
 class EntriesPage extends StatefulWidget{final VoidCallback onChanged;const EntriesPage({super.key,required this.onChanged});@override State<EntriesPage> createState()=>_EntriesPageState();}
