@@ -46,7 +46,7 @@ class LindaCafeApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
     title: 'مدیریت کافه لیندا', debugShowCheckedModeBanner: false,
     theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff59665d), brightness: Brightness.light), useMaterial3: true, scaffoldBackgroundColor: const Color(0xfff7f7f3), appBarTheme: const AppBarTheme(backgroundColor: Color(0xfff7f7f3), centerTitle: false)),
-    builder: (context, child) => Directionality(textDirection: TextDirection.values.last, child: child!),
+    builder: (context, child) => Directionality(textDirection: TextDirection.rtl,child: child!,
     home: const HomePage(),
   );
 }
